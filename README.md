@@ -1,6 +1,6 @@
-##Tickers.info
+## Tickers.info
 
-[Launch the app](tickers.info)
+[Launch the app](https://tickers.info)
 
 Use the searchbar to subsribe to various stocks.
 
