@@ -1,0 +1,90 @@
+.Backdrop {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.61);
+  width: 100%;
+  height: 100%;
+}
+
+.Login {
+  position: relative;
+  height: auto;
+  width: 85%;
+  max-width: 500px;
+  margin: auto;
+  top: 17%;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background: linear-gradient(
+    45deg,
+    rgba(77, 77, 77, 0.822),
+    rgba(61, 61, 61, 0.795)
+  );
+  border-radius: 10px;
+  box-shadow: 0 0 18px -4px rgba(0, 0, 0, 0.733);
+  z-index: 99;
+  border: 3px solid rgba(255, 255, 255, 0.247);
+  animation: show-modal 300ms 1 ease-in;
+  padding: 3% 0 3% 0;
+}
+
+.Login input {
+  width: 76%;
+  min-height: 28px;
+  border-radius: 5px;
+  border: 0;
+  padding: 2% 1% 2% 6%;
+  margin: 10px 0 2px 0;
+  outline: none;
+  box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.082);
+}
+
+.LoginButton {
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: 400;
+  border: 1px solid rgb(70, 70, 70);
+  cursor: pointer;
+  width: 83%;
+  min-height: 25px;
+  font-size: auto;
+  background-color: rgba(153, 153, 153, 0.4);
+  border-radius: 8px;
+  padding: 3% 0 3% 0;
+  margin: 5px 0 0 0;
+  color: rgb(243, 243, 243);
+  box-sizing: content-box;
+  box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.082);
+}
+
+.CloseButton {
+  margin-top: 30px;
+}
+
+.LoginButton:focus {
+  outline: none;
+}
+
+@keyframes show-modal {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (min-width: 620px) {
+  .LoginButton:hover {
+    box-shadow: 0 0 8px -3px black;
+    background: linear-gradient(
+      45deg,
+      rgba(218, 218, 218, 0.35),
+      rgba(216, 216, 216, 0.25)
+    );
+  }
+}

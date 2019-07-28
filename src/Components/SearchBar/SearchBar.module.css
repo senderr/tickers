@@ -1,0 +1,108 @@
+.SearchBar {
+  caret-color: rgb(179, 179, 179);
+  color: rgb(224, 224, 224);
+  border-radius: 30px;
+  outline: none;
+  cursor: text;
+  border: 0;
+  padding: 0;
+  min-height: 70%;
+  min-width: 30%;
+  margin: auto;
+  max-width: 80%;
+  text-align: center;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 3vw;
+  transition: min-width 250ms 0s cubic-bezier(0.25, 0.1, 0.25, 1);
+  background: linear-gradient(to left, rgb(104, 104, 104), rgb(126, 126, 126));
+}
+
+.SearchBar:focus {
+  min-width: 80%;
+  transition: min-width 250ms 0s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.SearchbarWrapper {
+  width: 60%;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+}
+
+.SearchBar::placeholder {
+  color: rgb(224, 224, 224);
+}
+
+.SearchBar:focus {
+  box-shadow: inset 0px 0px 6px -1px rgba(255, 255, 255);
+}
+
+.DropdownMenu {
+  position: absolute;
+  z-index: 80;
+  border-radius: 15px;
+  background-color: rgba(31, 31, 31, 0.767);
+  border: 4px solid rgb(27, 27, 27);
+  box-shadow: 0 0 18px -3px black;
+  animation: menu-open 500ms 1 cubic-bezier(0.23, 0.92, 0.84, 0.93);
+  max-width: 75vw;
+  margin: auto;
+  top: 70px;
+  right: 0;
+  left: 0;
+  max-height: 70%;
+  overflow: auto;
+}
+
+.DropdownMenu::-webkit-scrollbar {
+  display: none;
+}
+
+.DropdownMenu h1 {
+  margin: 7px 0 7px;
+  color: rgb(202, 202, 202);
+  text-align: center;
+  width: 100%;
+}
+
+.Hidden {
+  display: none;
+}
+
+@keyframes menu-open {
+  0% {
+    max-height: 150px;
+    opacity: 0.3;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    max-height: 1000px;
+  }
+}
+
+@media (max-width: 500px) {
+  .SearchBar {
+    min-height: 9vw;
+  }
+}
+
+@media (min-width: 600px) {
+  .SearchBar {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 620px) {
+  .SearchBar {
+    transition: none;
+  }
+  .SearchBar:focus {
+    transition: none;
+    min-width: 30%;
+  }
+  .DropdownMenu {
+    max-height: 30%;
+  }
+}

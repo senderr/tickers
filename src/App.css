@@ -1,0 +1,36 @@
+.App {
+  background: linear-gradient(-105deg, rgba(87, 87, 87, 0.8), rgb(87, 87, 87));
+  text-align: center;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  min-width: 620px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.App::-webkit-scrollbar {
+  display: none;
+}
+
+.App p::selection,
+h1::selection,
+button::selection {
+  background-color: transparent;
+}
+
+.App p,
+h1 {
+  cursor: default;
+}
+
+@media (max-width: 620px) {
+  .App {
+    min-width: 320px;
+  }
+
+  html,
+  body {
+    overflow-x: hidden;
+  }
+}

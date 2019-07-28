@@ -1,0 +1,57 @@
+.Toolbar {
+  height: 70px;
+  background: linear-gradient(
+    to right,
+    rgb(30, 30, 30, 0.8),
+    rgb(40, 40, 40, 1)
+  );
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.596);
+}
+
+.Toolbar p {
+  color: rgb(160, 160, 160);
+  font-size: 14px;
+  text-align: left;
+  margin-left: -3%;
+}
+
+.Toolbar h1,
+.LoginButton {
+  color: rgb(160, 160, 160);
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 3vw;
+  font-weight: 800;
+  width: 20%;
+  white-space: nowrap;
+  padding: 0;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.Toolbar h1 {
+  padding-left: 14px;
+  box-sizing: border-box;
+}
+
+.LoginButton {
+  background-color: transparent;
+  cursor: pointer;
+  outline: none;
+  border: 0;
+  padding-right: 14px;
+  height: 100%;
+}
+
+.LoginButton:hover {
+  text-shadow: 0 0 13px rgba(255, 255, 255, 0.26);
+}
+
+@media (min-width: 600px) {
+  .Toolbar h1,
+  .LoginButton {
+    font-size: 18px;
+  }
+}
