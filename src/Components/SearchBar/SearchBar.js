@@ -4,7 +4,7 @@ import axios from 'axios';
 import classes from './SearchBar.module.css';
 import DropdownItem from '../DropdownItem/DropdownItem';
 
-import { API_KEY } from '../../Private/IEXCloud/API_KEY';
+import { API_KEY } from '../../private/IEXCloud/API_KEY';
 
 const BASE_URL = 'https://cloud.iexapis.com/stable/';
 
