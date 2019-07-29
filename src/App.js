@@ -7,7 +7,7 @@ import Toolbar from './containers/Toolbar/Toolbar';
 import Login from './components/Login/Login';
 import axios from 'axios';
 
-import { API_KEY } from './Private/IEXCloud/API_KEY';
+import { API_KEY } from './private/IEXCloud/API_KEY';
 
 const BASE_URL = 'https://cloud.iexapis.com';
 
