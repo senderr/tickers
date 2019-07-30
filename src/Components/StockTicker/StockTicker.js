@@ -1,6 +1,7 @@
 import React from 'react';
 
 import Name from './Name/Name';
+import Graph from './Graph/Graph';
 import Price from './Price/Price';
 
 import classes from './StockTicker.module.css';
@@ -21,6 +22,7 @@ const StockTicker = (props) => {
         border: `4px solid rgb(${bgColor}, 0.3)`
       }}>
       <Name name={props.name} symbol={props.symbol} />
+      <Graph graphData={props.graphData} symbol={props.symbol} />
       <h1 onClick={(symbol) => props.deleteTicker(props.symbol)}>Remove</h1>
       <Price
         price={props.price}

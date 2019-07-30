@@ -23,6 +23,7 @@
   right: 0;
   margin: auto;
   margin-top: 28px;
+  width: 100px;
 }
 
 .StockTicker:hover h1 {
@@ -32,16 +33,12 @@
 }
 
 .StockTicker:hover h1:hover {
-  text-shadow: 0 0 40px rgba(255, 255, 255, 0.13);
-  color: rgba(0, 0, 0, 0.774);
+  text-shadow: 0 0 40px rgba(255, 255, 255, 0.199);
+  color: rgba(0, 0, 0, 0.685);
 }
 
 .StockTicker p {
   z-index: 5;
-}
-
-.Linebreak {
-  width: 100%;
 }
 
 .RemoveButton {
@@ -58,6 +55,12 @@
 .RemoveButton:hover {
   background-color: rgba(255, 255, 255, 0.322);
   cursor: pointer;
+}
+
+@media (max-width: 800px) {
+  .StockTicker {
+    height: 12vw;
+  }
 }
 
 @media (max-width: 620px) {
@@ -85,12 +88,5 @@
   }
   100% {
     opacity: 1;
-  }
-}
-
-@media (min-width: 621px) {
-  .StockTicker:hover {
-    background-color: rgba(255, 255, 255, 0.12) !important;
-    border: 4px solid rgba(255, 255, 255, 0.315) !important;
   }
 }

@@ -1,0 +1,19 @@
+.Graph {
+  height: 100%;
+  width: 60vw;
+  overflow: hidden;
+}
+
+@media (max-width: 620px) {
+  .Graph {
+    height: 60px;
+    width: 40vw;
+  }
+}
+
+@media (max-width: 500px) {
+  .Graph {
+    width: 40vw;
+    height: 10vw;
+  }
+}

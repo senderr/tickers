@@ -24,24 +24,39 @@ class StockInfo extends Component {
     let tickers = null,
       loggedInMessage = null;
     if (this.props.stockData && this.props.stockData.length > 0) {
-      let orderedData = [];
+      let orderedStockData = [],
+        orderedGraphData = [];
+
       this.props.subscribedTickers.forEach((ticker) => {
         for (let i = 0; i < this.props.subscribedTickers.length; i++) {
           if (ticker === this.props.stockData[i].symbol) {
-            orderedData.push(this.props.stockData[i]);
+            orderedStockData.push(this.props.stockData[i]);
+          }
+          if (ticker === this.props.graphData[i].symbol) {
+            orderedGraphData.push(this.props.graphData[i]);
           }
         }
       });
-      tickers = orderedData.map((stock) => {
+
+      let data = [];
+      for (let i = 0; i < this.props.subscribedTickers.length; i++) {
+        data.push({
+          stockData: orderedStockData[i],
+          graphData: orderedGraphData[i]
+        });
+      }
+
+      tickers = data.map((stock) => {
         return (
           <StockTicker
             deleteTicker={this.props.deleteTicker}
-            key={stock.symbol}
-            symbol={stock.symbol}
-            name={stock.companyName}
-            price={stock.latestPrice}
-            change={stock.change}
-            changePercent={stock.changePercent}
+            key={stock.stockData.symbol}
+            graphData={stock.graphData.data}
+            symbol={stock.stockData.symbol}
+            name={stock.stockData.companyName}
+            price={stock.stockData.latestPrice}
+            change={stock.stockData.change}
+            changePercent={stock.stockData.changePercent}
           />
         );
       });

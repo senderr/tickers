@@ -11,6 +11,30 @@ import { API_KEY } from './private/IEXCloud/API_KEY';
 
 const BASE_URL = 'https://cloud.iexapis.com';
 
+axios.interceptors.response.use(
+  (response) => {
+    //Intercept Response
+    return response;
+  },
+  (error) => {
+    //Intercept Error
+    console.log(error.message);
+    return Promise.reject(error);
+  }
+);
+
+axios.interceptors.request.use(
+  (config) => {
+    //Intercept request
+    return config;
+  },
+  (error) => {
+    //Intercept error
+    console.log(error.message);
+    return Promise.reject(error);
+  }
+);
+
 /**
  * This app fetches stock data from IEXapis and displays it to the user.
  * The user can sign in to keep their subscribed stocks saved to their account.
@@ -22,8 +46,27 @@ class App extends React.Component {
     userInfo: null,
     showLogin: false,
     subscribedTickers: [],
-    stockData: []
+    stockData: [],
+    graphData: []
   };
+
+  componentDidUpdate(oldProps, oldState) {
+    let updateDatabase = false;
+    if (
+      oldState.subscribedTickers.length !== this.state.subscribedTickers.length
+    ) {
+      updateDatabase = true;
+    } else {
+      for (let i = 0; i < this.state.subscribedTickers.length; i++) {
+        if (oldState.subscribedTickers[i] !== this.state.subscribedTickers[i]) {
+          updateDatabase = true;
+        }
+      }
+    }
+    if (updateDatabase) {
+      this.updateDatabase();
+    }
+  }
 
   /**
    * Sets up login listener to update userInfo state when user logs in/out
@@ -39,50 +82,128 @@ class App extends React.Component {
           .doc(user.uid);
         ref.get().then((userData) => {
           const tickers = userData.data().subscribedTickers;
-          let data = [];
-          let requests = [];
-          for (let symbol of tickers) {
-            let prom = axios
-              .get(
-                BASE_URL + '/stable/stock/' + symbol + '/quote?token=' + API_KEY
-              )
-              .then((response) => {
-                data.push(response.data);
+          this.requestStockAndGraphData(tickers).then(
+            ({ stockData, graphData }) => {
+              this.setState({
+                stockData: stockData,
+                graphData: graphData,
+                subscribedTickers: tickers
               });
-            requests.push(prom);
-          }
-          Promise.all(requests).then(() => {
-            this.setState({ stockData: data, subscribedTickers: tickers });
-          });
+            }
+          );
         });
       } else {
         this.setState({ userInfo: null, subscribedTickers: [], stockData: [] });
       }
     });
 
-    /**
-     * Updates local stock data every 15 seconds
-     */
+    //Updates local stock data every 15 seconds
     setInterval(() => {
       if (this.state.stockData.length > 0) {
-        let data = [];
-        let requests = [];
-        for (let symbol of this.state.subscribedTickers) {
-          let prom = axios
-            .get(
-              BASE_URL + '/stable/stock/' + symbol + '/quote?token=' + API_KEY
-            )
-            .then((response) => {
-              data.push(response.data);
-            });
-          requests.push(prom);
-        }
-        Promise.all(requests).then(() => {
-          this.setState({ stockData: data });
-        });
+        this.requestStockData(this.state.subscribedTickers).then((stockData) =>
+          this.setState({ stockData: stockData })
+        );
       }
     }, 15000);
+
+    //Updates local graph data every 5 minutes
+    setInterval(() => {
+      if (this.state.stockData.length > 0) {
+        const time = new Date();
+        if (time.getMinutes() === 0 || time.getMinutes % 5 === 0) {
+          this.requestGraphData(this.state.subscribedTickers).then(
+            (graphData) => this.setState({ graphData: graphData })
+          );
+        }
+      }
+    }, 60000);
   }
+
+  requestStockData = (symbols) => {
+    return new Promise((resolve) => {
+      let stockData = [];
+      let requests = [];
+      for (let symbol of symbols) {
+        let stockDataRequest = axios
+          .get(BASE_URL + '/stable/stock/' + symbol + '/quote?token=' + API_KEY)
+          .then((response) => {
+            stockData.push(response.data);
+          });
+        requests.push(stockDataRequest);
+      }
+      Promise.all(requests)
+        .then(() => {
+          resolve(stockData);
+        })
+        .catch((error) => console.log(error.message));
+    });
+  };
+
+  requestGraphData = (symbols) => {
+    return new Promise((resolve) => {
+      let graphData = [];
+      let requests = [];
+      for (let symbol of symbols) {
+        let graphDataRequest = axios
+          .get(
+            BASE_URL +
+              '/stable/stock' +
+              symbol +
+              '/intraday-prices?interval=5&token=' +
+              API_KEY
+          )
+          .then((response) => {
+            graphData.push({ name: symbol, data: response.data });
+          });
+        requests.push(graphDataRequest);
+      }
+      Promise.all(requests)
+        .then(() => {
+          resolve(graphData);
+        })
+        .catch((error) => console.log(error.message));
+    });
+  };
+
+  requestStockAndGraphData = (symbols) => {
+    function getStockData(symbol) {
+      return axios.get(
+        BASE_URL + '/stable/stock/' + symbol + '/quote?token=' + API_KEY
+      );
+    }
+
+    function getGraphData(symbol) {
+      return axios.get(
+        BASE_URL +
+          '/stable/stock/' +
+          symbol +
+          '/intraday-prices?chartInterval=5&token=' +
+          API_KEY
+      );
+    }
+
+    return new Promise((resolve) => {
+      let stockData = [],
+        graphData = [];
+      let requests = [];
+      for (let symbol of symbols) {
+        let request = axios
+          .all([getStockData(symbol), getGraphData(symbol)])
+          .then(
+            axios.spread((stockResponse, graphResponse) => {
+              stockData.push(stockResponse.data);
+              graphData.push({ symbol: symbol, data: graphResponse.data });
+            })
+          );
+        requests.push(request);
+      }
+      Promise.all(requests)
+        .then(() => {
+          resolve({ stockData: stockData, graphData: graphData });
+        })
+        .catch((error) => console.log(error.message));
+    });
+  };
 
   /**
    * Called when a ticker is added or removed from the local state to keep the database synced.
@@ -104,40 +225,25 @@ class App extends React.Component {
    */
   addTicker = (symbol) => {
     const subscribedTickers = [...this.state.subscribedTickers];
-    let continueSearch = true;
+    let alreadySubscribed = false;
     subscribedTickers.forEach((ticker) => {
       if (ticker === symbol) {
-        continueSearch = false;
+        alreadySubscribed = true;
       }
     });
-    if (continueSearch) {
-      axios
-        .get(BASE_URL + '/stable/stock/' + symbol + '/quote?token=' + API_KEY)
-        .then((response) => {
-          if (
-            response.data.price === null ||
-            response.data === null ||
-            response.data.changePercent === null ||
-            response.data.symbol === null ||
-            response.data.name === null
-          ) {
-            alert('There is an error with this ticker');
-            return;
-          }
-          let data = [...this.state.stockData],
-            tickers = [...this.state.subscribedTickers];
-          data = data.concat(response.data);
-          tickers = tickers.concat(symbol);
+    if (!alreadySubscribed) {
+      const newTickers = [...subscribedTickers, symbol];
+      this.requestStockAndGraphData([symbol]).then(
+        ({ stockData, graphData }) => {
+          const newStockData = [...this.state.stockData, ...stockData];
+          const newGraphData = [...this.state.graphData, ...graphData];
           this.setState({
-            stockData: data,
-            subscribedTickers: tickers
+            subscribedTickers: newTickers,
+            stockData: newStockData,
+            graphData: newGraphData
           });
-        })
-        .catch((error) => {
-          alert('An error occured, please refresh the page');
-          console.log(error.message);
-        })
-        .finally(() => this.updateDatabase());
+        }
+      );
     } else {
       alert('You are already subscribed to this ticker');
     }
@@ -147,14 +253,25 @@ class App extends React.Component {
    * Removes a ticker from the local state
    */
   deleteTicker = (symbol) => {
-    const data = [...this.state.stockData],
+    const stockData = [...this.state.stockData],
+      graphData = [...this.state.graphData],
       tickers = [...this.state.subscribedTickers];
+
     const tickersIndex = tickers.findIndex((name) => name === symbol);
-    const dataIndex = data.findIndex((stock) => stock.symbol === symbol);
+    const stockIndex = stockData.findIndex((stock) => stock.symbol === symbol);
+    const graphIndex = graphData.findIndex((stock) => stock.symbol === symbol);
+
     tickers.splice(tickersIndex, 1);
-    data.splice(dataIndex, 1);
-    this.setState({ stockData: data, subscribedTickers: tickers }, () =>
-      this.updateDatabase()
+    stockData.splice(stockIndex, 1);
+    graphData.splice(graphIndex, 1);
+
+    this.setState(
+      {
+        stockData: stockData,
+        graphData: graphData,
+        subscribedTickers: tickers
+      },
+      () => this.updateDatabase()
     );
   };
 
@@ -264,6 +381,7 @@ class App extends React.Component {
           loggedIn={this.state.userInfo !== null}
           deleteTicker={this.deleteTicker}
           stockData={this.state.stockData}
+          graphData={this.state.graphData}
           subscribedTickers={this.state.subscribedTickers}
         />
         {loginModal}

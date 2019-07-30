@@ -3,6 +3,7 @@
   padding: 0;
   margin: 0;
   text-align: left;
+  overflow: visible;
 }
 
 .Symbol {
@@ -19,13 +20,16 @@
   flex-direction: column;
   align-content: stretch;
   margin-left: 5%;
+  white-space: nowrap;
+  padding-right: 5px;
 }
 
-@media (max-width: 620px) {
+@media (max-width: 800px) {
   .Symbol {
-    font-size: 26px;
+    font-size: 7vw;
   }
+
   .Name {
-    font-size: 12px;
+    font-size: 1.8vw;
   }
 }
