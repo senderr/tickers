@@ -23,7 +23,7 @@ const StockTicker = (props) => {
       }}>
       <Name name={props.name} symbol={props.symbol} />
       <Graph graphData={props.graphData} symbol={props.symbol} />
-      <h1 onClick={(symbol) => props.deleteTicker(props.symbol)}>Remove</h1>
+      {/* <h1 onClick={(symbol) => props.deleteTicker(props.symbol)}>Remove</h1> */}
       <Price
         price={props.price}
         change={props.change}

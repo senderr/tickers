@@ -1,39 +1,84 @@
 import React, { Component } from 'react';
 
-import classes from './Graph.module.css';
+import Highcharts from 'highcharts';
 
-import * as am4core from '@amcharts/amcharts4/core';
-import * as am4charts from '@amcharts/amcharts4/charts';
-import am4themes_animated from '@amcharts/amcharts4/themes/animated';
+import classes from './Graph.module.css';
 
 class Graph extends Component {
   componentDidMount() {
-    am4core.useTheme(am4themes_animated);
-
-    let chart = am4core.create(this.props.symbol, am4charts.XYChart);
-
-    let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
-
-    let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-
-    let series = chart.series.push(new am4charts.LineSeries());
-    series.dataFields.valueY = 'Price';
-    series.dataFields.dateX = 'Time';
-    series.tooltipText = '{price}';
-    series.tooltip.pointerOrientation = 'vertical';
-
-    chart.cursor = new am4charts.XYCursor();
-    chart.cursor.snapToSeries = series;
-    chart.cursor.xAxis = dateAxis;
-
     let data = [];
+    let labels = [];
+    let prevPrice;
     this.props.graphData.forEach((point) => {
-      data.push({
-        time: point.label,
-        price: point.marketAverage
-      });
+      if (point.close !== null) {
+        prevPrice = { average: point.average, label: point.label };
+        data.push(point.average);
+        labels.push(point.label);
+      } else {
+        data.push(prevPrice.average);
+        labels.push(prevPrice.label);
+      }
     });
-    chart.data = data;
+    labels[labels.length - 1] = '4:00 PM';
+    console.log(labels);
+    const chart = Highcharts.chart(this.props.symbol, {
+      chart: {
+        type: 'line',
+        backgroundColor: 'transparent',
+        marginBottom: 40,
+        spacingRight: 18,
+        spacingTop: 15
+      },
+      title: 'none',
+      xAxis: {
+        lineColor: 'transparent',
+        type: 'category',
+        categories: labels,
+        gridLineWidth: 0,
+        labels: {
+          rotation: 0.01,
+          style: {
+            color: 'black'
+          },
+          formatter: function() {
+            if (this.isLast || this.isFirst) {
+              return this.value;
+            }
+          }
+        }
+      },
+      yAxis: {
+        startOnTick: true,
+        tickInterval: 0.5,
+        tickAmount: 3,
+        title: {
+          enabled: false
+        },
+        gridLineWidth: 0.3,
+        gridLineColor: 'black',
+        labels: {
+          style: {
+            color: 'black'
+          },
+          format: '${value}'
+        }
+      },
+      series: [
+        {
+          showInLegend: false,
+          name: '1min close',
+          data: data,
+          color: 'black'
+        }
+      ],
+      plotOptions: {
+        line: {
+          marker: {
+            enabled: false
+          }
+        }
+      }
+    });
   }
 
   render() {

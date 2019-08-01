@@ -93,30 +93,33 @@ class App extends React.Component {
           );
         });
       } else {
-        this.setState({ userInfo: null, subscribedTickers: [], stockData: [] });
+        this.setState(
+          { userInfo: null, subscribedTickers: [], stockData: [] },
+          () => this.addTicker('BYND')
+        );
       }
     });
 
     //Updates local stock data every 15 seconds
-    setInterval(() => {
-      if (this.state.stockData.length > 0) {
-        this.requestStockData(this.state.subscribedTickers).then((stockData) =>
-          this.setState({ stockData: stockData })
-        );
-      }
-    }, 15000);
+    // setInterval(() => {
+    //   if (this.state.stockData.length > 0) {
+    //     this.requestStockData(this.state.subscribedTickers).then((stockData) =>
+    //       this.setState({ stockData: stockData })
+    //     );
+    //   }
+    // }, 15000);
 
-    //Updates local graph data every 5 minutes
-    setInterval(() => {
-      if (this.state.stockData.length > 0) {
-        const time = new Date();
-        if (time.getMinutes() === 0 || time.getMinutes % 5 === 0) {
-          this.requestGraphData(this.state.subscribedTickers).then(
-            (graphData) => this.setState({ graphData: graphData })
-          );
-        }
-      }
-    }, 60000);
+    // //Updates local graph data every 5 minutes
+    // setInterval(() => {
+    //   if (this.state.stockData.length > 0) {
+    //     const time = new Date();
+    //     if (time.getMinutes() === 0 || time.getMinutes % 5 === 0) {
+    //       this.requestGraphData(this.state.subscribedTickers).then(
+    //         (graphData) => this.setState({ graphData: graphData })
+    //       );
+    //     }
+    //   }
+    // }, 60000);
   }
 
   requestStockData = (symbols) => {
@@ -149,7 +152,7 @@ class App extends React.Component {
             BASE_URL +
               '/stable/stock' +
               symbol +
-              '/intraday-prices?interval=5&token=' +
+              '/intraday-prices?chartInterval=5&token=' +
               API_KEY
           )
           .then((response) => {
