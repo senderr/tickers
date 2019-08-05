@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import StockTicker from '../../Components/StockTicker/StockTicker';
+import StockTicker from '../../components/StockTicker/StockTicker';
 import classes from './StockInfo.module.css';
 
 class StockInfo extends Component {

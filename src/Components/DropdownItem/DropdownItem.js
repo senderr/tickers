@@ -1,5 +1,5 @@
 import React from 'react';
-import plus from '../../Assets/Images/green_plus.png';
+import plus from '../../assets/images/green_plus.png';
 
 import classes from './DropdownItem.module.css';
 
