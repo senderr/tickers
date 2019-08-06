@@ -42,7 +42,7 @@ class SearchBar extends Component {
   };
 
   searchTypeHandler = (e) => {
-    this.setState({ stocksearch: e.target.value }, () => {
+    this.setState({ stocksearch: e.target.value.toUpperCase() }, () => {
       if (this.state.stocksearch.length > 0) {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
