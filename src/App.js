@@ -47,7 +47,8 @@ class App extends React.Component {
     showLogin: false,
     subscribedTickers: [],
     stockData: [],
-    graphData: []
+    graphData: [],
+    loadGraphs: window.innerWidth >= 900
   };
 
   componentDidUpdate(oldProps, oldState) {
@@ -82,15 +83,25 @@ class App extends React.Component {
           .doc(user.uid);
         ref.get().then((userData) => {
           const tickers = userData.data().subscribedTickers;
-          this.requestStockAndGraphData(tickers).then(
-            ({ stockData, graphData }) => {
+
+          if (this.state.loadGraphs) {
+            this.requestStockAndGraphData(tickers).then(
+              ({ stockData, graphData }) => {
+                this.setState({
+                  stockData: stockData,
+                  graphData: graphData,
+                  subscribedTickers: tickers
+                });
+              }
+            );
+          } else {
+            this.requestStockData(tickers).then((stockData) => {
               this.setState({
                 stockData: stockData,
-                graphData: graphData,
                 subscribedTickers: tickers
               });
-            }
-          );
+            });
+          }
         });
       } else {
         this.setState(
@@ -108,7 +119,6 @@ class App extends React.Component {
     const minute = date.getMinutes();
 
     let shouldSetInterval = true;
-    let stockInterval, graphInterval;
 
     //Weekends
     if (day === 0 || day === 6) {
@@ -125,13 +135,11 @@ class App extends React.Component {
     //Post market
     if (hour > 15) {
       shouldSetInterval = false;
-      clearInterval(stockInterval);
-      clearInterval(graphInterval);
     }
 
     if (shouldSetInterval) {
       //Updates local stock data every 15 seconds
-      stockInterval = setInterval(() => {
+      setInterval(() => {
         if (this.state.stockData.length > 0) {
           this.requestStockData(this.state.subscribedTickers).then(
             (stockData) => this.setState({ stockData: stockData })
@@ -140,17 +148,17 @@ class App extends React.Component {
       }, 15000);
 
       //Updates local graph data every 5 minutes
-      graphInterval = setInterval(() => {
-        console.log('trying new graph data');
-        if (this.state.stockData.length > 0) {
-          const time = new Date();
-          if (time.getMinutes() === 0 || time.getMinutes() % 1 === 0) {
-            this.requestGraphData(this.state.subscribedTickers).then(
-              (graphData) => this.setState({ graphData: graphData })
-            );
+      if (this.state.loadGraphs)
+        setInterval(() => {
+          if (this.state.stockData.length > 0) {
+            const time = new Date();
+            if (time.getMinutes() === 0 || time.getMinutes() % 1 === 0) {
+              this.requestGraphData(this.state.subscribedTickers).then(
+                (graphData) => this.setState({ graphData: graphData })
+              );
+            }
           }
-        }
-      }, 60000);
+        }, 60000);
     }
   }
 
@@ -278,17 +286,27 @@ class App extends React.Component {
     });
     if (!alreadySubscribed) {
       const newTickers = [...subscribedTickers, symbol];
-      this.requestStockAndGraphData([symbol]).then(
-        ({ stockData, graphData }) => {
+      if (this.state.loadGraphs) {
+        this.requestStockAndGraphData([symbol]).then(
+          ({ stockData, graphData }) => {
+            const newStockData = [...this.state.stockData, ...stockData];
+            const newGraphData = [...this.state.graphData, ...graphData];
+            this.setState({
+              subscribedTickers: newTickers,
+              stockData: newStockData,
+              graphData: newGraphData
+            });
+          }
+        );
+      } else {
+        this.requestStockData([symbol]).then((stockData) => {
           const newStockData = [...this.state.stockData, ...stockData];
-          const newGraphData = [...this.state.graphData, ...graphData];
           this.setState({
-            subscribedTickers: newTickers,
             stockData: newStockData,
-            graphData: newGraphData
+            subscribedTickers: newTickers
           });
-        }
-      );
+        });
+      }
     } else {
       alert('You are already subscribed to this ticker');
     }
@@ -311,17 +329,27 @@ class App extends React.Component {
     });
     if (!alreadySubscribed) {
       const newTickers = [...subscribedTickers, ...symbols];
-      this.requestStockAndGraphData(symbols).then(
-        ({ stockData, graphData }) => {
+      if (this.state.loadGraphs) {
+        this.requestStockAndGraphData(symbols).then(
+          ({ stockData, graphData }) => {
+            const newStockData = [...this.state.stockData, ...stockData];
+            const newGraphData = [...this.state.graphData, ...graphData];
+            this.setState({
+              subscribedTickers: newTickers,
+              stockData: newStockData,
+              graphData: newGraphData
+            });
+          }
+        );
+      } else {
+        this.requestStockData(symbols).then((stockData) => {
           const newStockData = [...this.state.stockData, ...stockData];
-          const newGraphData = [...this.state.graphData, ...graphData];
           this.setState({
-            subscribedTickers: newTickers,
             stockData: newStockData,
-            graphData: newGraphData
+            subscribedTickers: newTickers
           });
-        }
-      );
+        });
+      }
     } else {
       alert('You are already subscribed to this ticker');
     }
@@ -456,6 +484,7 @@ class App extends React.Component {
           addTicker={this.addTicker}
         />
         <StockInfo
+          loadGraphs={this.state.loadGraphs}
           loggedIn={this.state.userInfo !== null}
           deleteTicker={this.deleteTicker}
           stockData={this.state.stockData}

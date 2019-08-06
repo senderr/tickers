@@ -23,7 +23,11 @@ class StockInfo extends Component {
   render() {
     let tickers = null,
       loggedInMessage = null;
-    if (this.props.stockData && this.props.stockData.length > 0) {
+    if (
+      this.props.stockData &&
+      this.props.stockData.length > 0 &&
+      this.props.loadGraphs
+    ) {
       let orderedStockData = [],
         orderedGraphData = [];
 
@@ -51,6 +55,37 @@ class StockInfo extends Component {
             deleteTicker={this.props.deleteTicker}
             key={stock.stockData.symbol}
             graphData={stock.graphData.data}
+            symbol={stock.stockData.symbol}
+            name={stock.stockData.companyName}
+            price={stock.stockData.latestPrice}
+            change={stock.stockData.change}
+            changePercent={stock.stockData.changePercent}
+          />
+        );
+      });
+    } else if (this.props.stockData && this.props.stockData.length > 0) {
+      let orderedStockData = [];
+
+      this.props.subscribedTickers.forEach((ticker) => {
+        for (let i = 0; i < this.props.subscribedTickers.length; i++) {
+          if (ticker === this.props.stockData[i].symbol) {
+            orderedStockData.push(this.props.stockData[i]);
+          }
+        }
+      });
+
+      let data = [];
+      for (let i = 0; i < this.props.subscribedTickers.length; i++) {
+        data.push({
+          stockData: orderedStockData[i]
+        });
+      }
+      tickers = data.map((stock) => {
+        return (
+          <StockTicker
+            deleteTicker={this.props.deleteTicker}
+            key={stock.stockData.symbol}
+            graphData={null}
             symbol={stock.stockData.symbol}
             name={stock.stockData.companyName}
             price={stock.stockData.latestPrice}

@@ -1,5 +1,14 @@
 .Graph {
   width: 100%;
+}
+
+.Message {
+  align-self: center;
+  font-size: 1.7vw;
+  color: rgba(0, 0, 0, 0.562);
+}
+
+.Hide {
   display: none;
 }
 
@@ -7,11 +16,5 @@
   .Graph {
     height: 60px;
     width: 40vw;
-  }
-}
-
-@media (min-width: 900px) {
-  .Graph {
-    display: block;
   }
 }
