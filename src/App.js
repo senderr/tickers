@@ -174,11 +174,9 @@ class App extends React.Component {
           });
         requests.push(stockDataRequest);
       }
-      Promise.all(requests)
-        .then(() => {
-          resolve(stockData);
-        })
-        .catch((error) => console.log(error.message));
+      Promise.all(requests).then(() => {
+        resolve(stockData);
+      });
     });
   };
 
@@ -200,11 +198,9 @@ class App extends React.Component {
           });
         requests.push(graphDataRequest);
       }
-      Promise.all(requests)
-        .then(() => {
-          resolve(graphData);
-        })
-        .catch((error) => console.log(error.message));
+      Promise.all(requests).then(() => {
+        resolve(graphData);
+      });
     });
   };
 
@@ -240,21 +236,19 @@ class App extends React.Component {
           );
         requests.push(request);
       }
-      Promise.all(requests)
-        .then(() => {
-          const date = new Date();
-          const hour = date.getHours();
-          if (hour > 15) {
-            for (let symbol of graphData) {
-              let closePrice = stockData.find(
-                (stock) => stock.symbol === symbol.symbol
-              ).close;
-              symbol.data.push({ label: '4 PM', close: closePrice });
-            }
+      Promise.all(requests).then(() => {
+        const date = new Date();
+        const hour = date.getHours();
+        if (hour > 15) {
+          for (let symbol of graphData) {
+            let closePrice = stockData.find(
+              (stock) => stock.symbol === symbol.symbol
+            ).close;
+            symbol.data.push({ label: '4 PM', close: closePrice });
           }
-          resolve({ stockData: stockData, graphData: graphData });
-        })
-        .catch((error) => console.log(error.message));
+        }
+        resolve({ stockData: stockData, graphData: graphData });
+      });
     });
   };
 

@@ -10,30 +10,6 @@ const BASE_URL = 'https://cloud.iexapis.com/stable/';
 
 let timeout;
 
-axios.interceptors.response.use(
-  (response) => {
-    //Intercept Response
-    return response;
-  },
-  (error) => {
-    //Intercept Error
-    console.log(error.message);
-    return Promise.reject(error);
-  }
-);
-
-axios.interceptors.request.use(
-  (config) => {
-    //Intercept request
-    return config;
-  },
-  (error) => {
-    //Intercept error
-    console.log(error.message);
-    return Promise.reject(error);
-  }
-);
-
 class SearchBar extends Component {
   state = {
     stocksearch: '',
@@ -61,7 +37,6 @@ class SearchBar extends Component {
               });
             })
             .catch((error) => {
-              console.log(error);
               this.setState({
                 dropdownData: null
               });
