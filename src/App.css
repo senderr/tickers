@@ -1,11 +1,11 @@
 .App {
   background: linear-gradient(-105deg, rgba(87, 87, 87, 0.8), rgb(87, 87, 87));
   text-align: center;
-  height: 100%;
-  width: 100%;
-  position: absolute;
+  height: 100vh;
+  width: 100vw;
   min-width: 620px;
-  overflow-y: auto;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
   overflow-x: hidden;
 }
 

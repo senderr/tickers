@@ -4,9 +4,9 @@
 
 .Message {
   align-self: center;
-  font-size: 1.7vw;
+  font-size: 9px;
   color: rgba(0, 0, 0, 0.562);
-  max-width: 60%;
+  max-width: 37%;
 }
 
 .Hide {
@@ -17,5 +17,11 @@
   .Graph {
     height: 60px;
     width: 40vw;
+  }
+}
+
+@media (min-width: 621px) {
+  .Message {
+    font-size: 2vw;
   }
 }
