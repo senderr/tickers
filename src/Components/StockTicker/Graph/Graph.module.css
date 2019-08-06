@@ -6,6 +6,7 @@
   align-self: center;
   font-size: 1.7vw;
   color: rgba(0, 0, 0, 0.562);
+  max-width: 60%;
 }
 
 .Hide {
