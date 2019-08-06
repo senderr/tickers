@@ -45,7 +45,6 @@ class StockInfo extends Component {
           graphData: orderedGraphData[i]
         });
       }
-
       tickers = data.map((stock) => {
         return (
           <StockTicker

@@ -95,7 +95,9 @@ class App extends React.Component {
       } else {
         this.setState(
           { userInfo: null, subscribedTickers: [], stockData: [] },
-          () => this.addTicker('BYND')
+          () => {
+            this.addTickers(['AAPL', 'MSFT', 'AMZN', 'SPY']);
+          }
         );
       }
     });
@@ -139,9 +141,10 @@ class App extends React.Component {
 
       //Updates local graph data every 5 minutes
       graphInterval = setInterval(() => {
+        console.log('trying new graph data');
         if (this.state.stockData.length > 0) {
           const time = new Date();
-          if (time.getMinutes() === 0 || time.getMinutes % 5 === 0) {
+          if (time.getMinutes() === 0 || time.getMinutes() % 1 === 0) {
             this.requestGraphData(this.state.subscribedTickers).then(
               (graphData) => this.setState({ graphData: graphData })
             );
@@ -179,13 +182,13 @@ class App extends React.Component {
         let graphDataRequest = axios
           .get(
             BASE_URL +
-              '/stable/stock' +
+              '/stable/stock/' +
               symbol +
               '/intraday-prices?chartInterval=5&token=' +
               API_KEY
           )
           .then((response) => {
-            graphData.push({ name: symbol, data: response.data });
+            graphData.push({ symbol: symbol, data: response.data });
           });
         requests.push(graphDataRequest);
       }
@@ -276,6 +279,39 @@ class App extends React.Component {
     if (!alreadySubscribed) {
       const newTickers = [...subscribedTickers, symbol];
       this.requestStockAndGraphData([symbol]).then(
+        ({ stockData, graphData }) => {
+          const newStockData = [...this.state.stockData, ...stockData];
+          const newGraphData = [...this.state.graphData, ...graphData];
+          this.setState({
+            subscribedTickers: newTickers,
+            stockData: newStockData,
+            graphData: newGraphData
+          });
+        }
+      );
+    } else {
+      alert('You are already subscribed to this ticker');
+    }
+  };
+
+  /**
+   * Adds several tickers to the local state
+   */
+  addTickers = (symbols) => {
+    const subscribedTickers = [...this.state.subscribedTickers];
+    let alreadySubscribed = false;
+    subscribedTickers.forEach((ticker) => {
+      if (
+        symbols.findIndex((sym) => {
+          return sym === ticker;
+        }) !== -1
+      ) {
+        alreadySubscribed = true;
+      }
+    });
+    if (!alreadySubscribed) {
+      const newTickers = [...subscribedTickers, ...symbols];
+      this.requestStockAndGraphData(symbols).then(
         ({ stockData, graphData }) => {
           const newStockData = [...this.state.stockData, ...stockData];
           const newGraphData = [...this.state.graphData, ...graphData];
