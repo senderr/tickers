@@ -121,7 +121,7 @@ class App extends React.Component {
     }
 
     //Post market
-    if (hour > 3) {
+    if (hour > 15) {
       shouldSetInterval = false;
       clearInterval(stockInterval);
       clearInterval(graphInterval);
@@ -233,7 +233,7 @@ class App extends React.Component {
         .then(() => {
           const date = new Date();
           const hour = date.getHours();
-          if (hour > 3) {
+          if (hour > 15) {
             for (let symbol of graphData) {
               let closePrice = stockData.find(
                 (stock) => stock.symbol === symbol.symbol

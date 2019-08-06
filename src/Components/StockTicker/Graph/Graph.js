@@ -26,7 +26,6 @@ class Graph extends Component {
         labels.push(point.label);
       }
     });
-    labels[labels.length - 1] = '4:00 PM';
 
     const chart = Highcharts.chart(this.props.symbol, {
       chart: {

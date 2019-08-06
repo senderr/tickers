@@ -5,6 +5,7 @@ import Graph from './Graph/Graph';
 import Price from './Price/Price';
 
 import classes from './StockTicker.module.css';
+import closeButton from '../../assets/images/close-button.jpg';
 
 const StockTicker = (props) => {
   const sign = props.change > 0 ? '+' : '';
@@ -36,6 +37,13 @@ const StockTicker = (props) => {
         name='remove'>
         Remove
       </button>
+      <img
+        src={closeButton}
+        alt='remove'
+        onClick={(symbol) => props.deleteTicker(props.symbol)}
+        className={classes.RemoveButtonDesktop}
+        name='remove'
+      />
     </div>
   );
 };
