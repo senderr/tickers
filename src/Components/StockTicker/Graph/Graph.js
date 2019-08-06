@@ -6,21 +6,28 @@ import classes from './Graph.module.css';
 
 class Graph extends Component {
   componentDidMount() {
+    if (window.innerWidth < 900) {
+      return;
+    }
     let data = [];
     let labels = [];
     let prevPrice;
     this.props.graphData.forEach((point) => {
-      if (point.close !== null) {
-        prevPrice = { average: point.average, label: point.label };
-        data.push(point.average);
+      if (point.close) {
+        prevPrice = point.close;
+        data.push(point.close);
+        labels.push(point.label);
+      } else if (point.marketClose) {
+        prevPrice = point.marketClose;
+        data.push(point.marketClose);
         labels.push(point.label);
       } else {
-        data.push(prevPrice.average);
-        labels.push(prevPrice.label);
+        data.push(prevPrice);
+        labels.push(point.label);
       }
     });
     labels[labels.length - 1] = '4:00 PM';
-    console.log(labels);
+
     const chart = Highcharts.chart(this.props.symbol, {
       chart: {
         type: 'line',
@@ -48,9 +55,6 @@ class Graph extends Component {
         }
       },
       yAxis: {
-        startOnTick: true,
-        tickInterval: 0.5,
-        tickAmount: 3,
         title: {
           enabled: false
         },

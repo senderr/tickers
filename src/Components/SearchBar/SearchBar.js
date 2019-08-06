@@ -8,6 +8,8 @@ import { API_KEY } from '../../private/IEXCloud/API_KEY';
 
 const BASE_URL = 'https://cloud.iexapis.com/stable/';
 
+let timeout;
+
 axios.interceptors.response.use(
   (response) => {
     //Intercept Response
@@ -42,17 +44,29 @@ class SearchBar extends Component {
   searchTypeHandler = (e) => {
     this.setState({ stocksearch: e.target.value }, () => {
       if (this.state.stocksearch.length > 0) {
-        axios
-          .get(
-            BASE_URL + 'search/' + this.state.stocksearch + '?token=' + API_KEY
-          )
-          .then((response) => {
-            this.setState({
-              dropdownData: response.data,
-              showDropdown: true
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          axios
+            .get(
+              BASE_URL +
+                'stock/' +
+                this.state.stocksearch +
+                '/quote?token=' +
+                API_KEY
+            )
+            .then((response) => {
+              this.setState({
+                dropdownData: response.data,
+                showDropdown: true
+              });
+            })
+            .catch((error) => {
+              console.log(error);
+              this.setState({
+                dropdownData: null
+              });
             });
-          })
-          .catch((error) => console.log(error));
+        }, 350);
       } else {
         this.setState({ showDropdown: false });
       }
@@ -63,8 +77,8 @@ class SearchBar extends Component {
     if (e.key === 'Escape') {
       this.setState({ showDropdown: false });
       e.target.blur();
-    } else if (e.key === 'Enter' && this.state.dropdownData.length > 0) {
-      const firstResult = this.state.dropdownData[0].symbol;
+    } else if (e.key === 'Enter' && this.state.dropdownData) {
+      const firstResult = this.state.dropdownData.symbol;
       this.props.addTicker(firstResult);
       this.closeSearchDropdown(e.target);
     }
@@ -89,20 +103,18 @@ class SearchBar extends Component {
     if (this.state.showDropdown) {
       dropdownMenuClasses = [classes.DropdownMenu];
       if (this.state.stocksearch === '') {
-        dropDownItems = <h1>Start typing a stock name or symbol...</h1>;
-      } else if (this.state.dropdownData.length === 0) {
+        dropDownItems = <h1>Search for a stock symbol...</h1>;
+      } else if (this.state.dropdownData === null) {
         dropDownItems = <h1>We can't find "{this.state.stocksearch}"</h1>;
       } else {
-        dropDownItems = this.state.dropdownData.map((stock) => {
-          return (
-            <DropdownItem
-              key={stock.symbol}
-              symbol={stock.symbol}
-              name={stock.securityName}
-              addTicker={this.props.addTicker}
-            />
-          );
-        });
+        dropDownItems = (
+          <DropdownItem
+            key={this.state.dropdownData.symbol}
+            symbol={this.state.dropdownData.symbol}
+            name={this.state.dropdownData.companyName}
+            addTicker={this.props.addTicker}
+          />
+        );
       }
     } else if (!this.state.showDropdown) {
       dropdownMenuClasses = [classes.DropdownMenu, classes.Hidden];

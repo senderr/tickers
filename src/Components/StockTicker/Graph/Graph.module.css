@@ -1,5 +1,6 @@
 .Graph {
   width: 100%;
+  visibility: hidden;
 }
 
 @media (max-width: 620px) {
@@ -9,9 +10,8 @@
   }
 }
 
-@media (max-width: 500px) {
+@media (min-width: 900px) {
   .Graph {
-    width: 40vw;
-    height: 10vw;
+    visibility: visible;
   }
 }

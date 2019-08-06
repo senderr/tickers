@@ -100,26 +100,55 @@ class App extends React.Component {
       }
     });
 
-    //Updates local stock data every 15 seconds
-    // setInterval(() => {
-    //   if (this.state.stockData.length > 0) {
-    //     this.requestStockData(this.state.subscribedTickers).then((stockData) =>
-    //       this.setState({ stockData: stockData })
-    //     );
-    //   }
-    // }, 15000);
+    const date = new Date();
+    const day = date.getDay(); // 0=sunday 1=monday 2=tuesday ...
+    const hour = date.getHours();
+    const minute = date.getMinutes();
 
-    // //Updates local graph data every 5 minutes
-    // setInterval(() => {
-    //   if (this.state.stockData.length > 0) {
-    //     const time = new Date();
-    //     if (time.getMinutes() === 0 || time.getMinutes % 5 === 0) {
-    //       this.requestGraphData(this.state.subscribedTickers).then(
-    //         (graphData) => this.setState({ graphData: graphData })
-    //       );
-    //     }
-    //   }
-    // }, 60000);
+    let shouldSetInterval = true;
+    let stockInterval, graphInterval;
+
+    //Weekends
+    if (day === 0 || day === 6) {
+      shouldSetInterval = false;
+    }
+
+    //Pre-market
+    if (hour < 9) {
+      shouldSetInterval = false;
+    } else if (hour === 9 && minute < 30) {
+      shouldSetInterval = false;
+    }
+
+    //Post market
+    if (hour > 3) {
+      shouldSetInterval = false;
+      clearInterval(stockInterval);
+      clearInterval(graphInterval);
+    }
+
+    if (shouldSetInterval) {
+      //Updates local stock data every 15 seconds
+      stockInterval = setInterval(() => {
+        if (this.state.stockData.length > 0) {
+          this.requestStockData(this.state.subscribedTickers).then(
+            (stockData) => this.setState({ stockData: stockData })
+          );
+        }
+      }, 15000);
+
+      //Updates local graph data every 5 minutes
+      graphInterval = setInterval(() => {
+        if (this.state.stockData.length > 0) {
+          const time = new Date();
+          if (time.getMinutes() === 0 || time.getMinutes % 5 === 0) {
+            this.requestGraphData(this.state.subscribedTickers).then(
+              (graphData) => this.setState({ graphData: graphData })
+            );
+          }
+        }
+      }, 60000);
+    }
   }
 
   requestStockData = (symbols) => {
@@ -202,6 +231,16 @@ class App extends React.Component {
       }
       Promise.all(requests)
         .then(() => {
+          const date = new Date();
+          const hour = date.getHours();
+          if (hour > 3) {
+            for (let symbol of graphData) {
+              let closePrice = stockData.find(
+                (stock) => stock.symbol === symbol.symbol
+              ).close;
+              symbol.data.push({ label: '4 PM', close: closePrice });
+            }
+          }
           resolve({ stockData: stockData, graphData: graphData });
         })
         .catch((error) => console.log(error.message));
