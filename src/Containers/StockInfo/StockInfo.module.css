@@ -4,6 +4,11 @@
   font-size: 20px;
 }
 
+.StockInfo {
+  position: relative;
+  margin-top: 80px;
+}
+
 .Message button {
   background-color: rgba(255, 255, 255, 0.384);
   border-radius: 2px;

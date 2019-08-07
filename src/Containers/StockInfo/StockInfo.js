@@ -109,7 +109,12 @@ class StockInfo extends Component {
         </h1>
       );
     }
-    return [tickers, loggedInMessage];
+    return (
+      <div className={classes.StockInfo}>
+        {tickers}
+        {loggedInMessage}
+      </div>
+    );
   }
 }
 

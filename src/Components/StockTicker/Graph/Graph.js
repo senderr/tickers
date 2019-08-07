@@ -16,7 +16,7 @@ class Graph extends Component {
     ) {
       let data = [];
       let labels = [];
-      let prevPrice;
+      let prevPrice = null;
       this.props.graphData.forEach((point) => {
         if (point.close) {
           prevPrice = point.close;
@@ -95,9 +95,10 @@ class Graph extends Component {
       this.setState({ width: window.innerWidth })
     );
     if (this.props.graphData) {
+      console.log(this.props.graphData);
       let data = [];
       let labels = [];
-      let prevPrice;
+      let prevPrice = null;
       this.props.graphData.forEach((point) => {
         if (point.close) {
           prevPrice = point.close;
