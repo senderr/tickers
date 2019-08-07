@@ -95,7 +95,6 @@ class Graph extends Component {
       this.setState({ width: window.innerWidth })
     );
     if (this.props.graphData) {
-      console.log(this.props.graphData);
       let data = [];
       let labels = [];
       let prevPrice = null;
