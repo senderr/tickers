@@ -19,6 +19,9 @@ axios.interceptors.response.use(
   (error) => {
     //Intercept Error
     console.log(error.message);
+    if (error.response.status === 451) {
+      alert('There is an error with this stock ticker');
+    }
     return Promise.reject(error);
   }
 );
